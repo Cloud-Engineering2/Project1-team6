@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+</head>
+
+<body>
+    <h1>로그인</h1>
+    <form id="loginForm" method="POST" th:action="@{/api/auth/login}">
+        <label for="username">아이디</label>
+        <input type="text" id="username" name="username" required>
+        <div id="usernameError" style="color: red;"></div>
+
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" name="password" required>
+        <div id="passwordError" style="color: red;"></div>
+
+        <button type="submit">로그인</button>
+    </form>
+
+    <script th:inline="javascript">
+
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            document.getElementById('usernameError').innerText = '';
+            document.getElementById('passwordError').innerText = '';
+
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => {
+                return response.text().then(text => {
+                    if (!response.ok) {
+                        try {
+                            const errorJson = JSON.parse(text);
+                            throw new Error(errorJson.error || '서버 오류');
+                        } catch (e) {
+                            throw new Error("서버 오류: " + text);
+                        }
+                    }
+                    return JSON.parse(text);
+                });
+            })
+            .then(data => {
+                alert('로그인 성공!');
+                localStorage.setItem('token', data.token);
+                window.location.href = '/';
+            })
+            .catch(error => {
+                if (error.message.includes("아이디")) {
+                    alert('아이디가 존재하지 않습니다.');
+                    document.getElementById('usernameError').innerText = '아이디가 존재하지 않습니다.';
+                } else if (error.message.includes("비밀번호")) {
+                    alert('비밀번호가 일치하지 않습니다.');
+                    document.getElementById('passwordError').innerText = '비밀번호가 일치하지 않습니다.';
+                } else {
+                    alert('로그인 실패: ' + error.message);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
