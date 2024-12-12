@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class CustomErrorController implements ErrorController {
 
+
+    
     @RequestMapping("/error/401")
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ModelAndView unauthorizedError() {
