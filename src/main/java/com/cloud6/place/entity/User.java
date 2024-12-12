@@ -43,14 +43,14 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
-    // 비밀번호 암호화
-    @PrePersist
-    public void encryptPassword() {
-        if (this.password != null) {
-            this.password = new BCryptPasswordEncoder().encode(this.password);
-            System.out.println("Encrypted Password: " + this.password);
-        }
-    }
+//    // 비밀번호 암호화
+//    @PrePersist
+//    public void encryptPassword() {
+//        if (this.password != null) {
+//            this.password = new BCryptPasswordEncoder().encode(this.password);
+//            System.out.println("Encrypted Password: " + this.password);
+//        }
+//    }
 
     // 생성자 예시 (username, email, password만 받는 생성자)
     public User(String username, String email, String password) {
