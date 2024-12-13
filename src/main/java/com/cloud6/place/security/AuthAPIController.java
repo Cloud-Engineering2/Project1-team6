@@ -1,16 +1,11 @@
 package com.cloud6.place.security;
 
-
-
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,14 +30,7 @@ public class AuthAPIController {
 	private JwtTokenProvider jwtTokenProvider;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-    @PostMapping("/hello")
-    public ResponseEntity<String> sayHello(@RequestBody String message) {
-        // 콘솔에 'Hello' 메시지 출력
-        System.out.println("Hello: " + message);
 
-        // 클라이언트에 응답 반환
-        return ResponseEntity.ok("서버에서 Hello 메시지를 받았습니다.");
-    }
 	@PostMapping("/signup")
 	public ResponseEntity<String> registerUser(@RequestBody SignUpRequest signUpRequest) {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -105,7 +93,6 @@ public class AuthAPIController {
 	}
 	@GetMapping("/check-login")
 	public ResponseEntity<?> checkLogin(HttpServletRequest request) {
-		System.out.println("토큰확인");
 	    // 쿠키에서 토큰 확인
 	    Cookie[] cookies = request.getCookies();
 	    String token = null;
@@ -118,7 +105,6 @@ public class AuthAPIController {
 	            }
 	        }
 	    }
-	    System.out.println("받은 토큰: " + token);  // 디버깅용 로그
 	    if (token != null && jwtTokenProvider.validateToken(token)) {
 	        // 토큰이 유효하면 로그인 상태
 	        return ResponseEntity.ok("로그인됨");

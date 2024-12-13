@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cloud6.place.dto.ReviewDTO;
-import com.cloud6.place.dto.ReviewRequest;
 import com.cloud6.place.entity.Place;
 import com.cloud6.place.entity.Review;
 import com.cloud6.place.entity.User;
@@ -23,7 +22,6 @@ import com.cloud6.place.repository.UserRepository;
 import com.cloud6.place.security.JwtTokenProvider;
 import com.cloud6.place.service.PlaceService;
 import com.cloud6.place.service.ReviewService;
-import com.cloud6.place.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReviewController {
 	private final ReviewService reviewService;
-	private final UserService userService;
 	private final PlaceService placeService;
 	private final UserRepository userRepository;
 	private final ReviewRepository reviewRepository;
@@ -42,7 +39,6 @@ public class ReviewController {
     private JwtTokenProvider jwtTokenProvider;
 	@GetMapping("/{id}")
 	public ResponseEntity<List<Review>> getReviewsByPlaceId(@PathVariable Long id) {
-	    System.out.println(id);
 	    try {
 	        List<Review> reviews = reviewService.getReviewsByPlaceId(id); // id로 리뷰 조회
 	        if (reviews.isEmpty()) {
@@ -57,6 +53,7 @@ public class ReviewController {
 	@PostMapping
 	public ResponseEntity<?> addReview(@RequestBody ReviewDTO reviewDTO, HttpServletRequest request) {
 	    // 쿠키에서 토큰 추출
+		System.out.println(reviewDTO);
 	    Cookie[] cookies = request.getCookies();
 	    String token = null;
 
