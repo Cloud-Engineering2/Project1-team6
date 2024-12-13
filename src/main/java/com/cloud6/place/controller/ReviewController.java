@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cloud6.place.dto.ReviewDTO;
@@ -112,6 +113,8 @@ public class ReviewController {
     @PutMapping("/{reviewId}")
     public ResponseEntity<?> updateReview(@PathVariable Long reviewId, @RequestBody ReviewDTO reviewDTO, HttpServletRequest request) {
         // 쿠키에서 토큰 추출 및 검증
+    	System.out.println(reviewId);
+    	System.out.println(reviewDTO);
         String token = getTokenFromCookies(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
@@ -139,23 +142,16 @@ public class ReviewController {
         return ResponseEntity.ok(review);
     }
 
-    // 추가: 특정 reviewId에 해당하는 리뷰를 삭제
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<?> deleteReview(@PathVariable Long reviewId, HttpServletRequest request) {
-        // 쿠키에서 토큰 추출 및 검증
-        String token = getTokenFromCookies(request);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
-        }
-
-        // 사용자 확인
-        String username = jwtTokenProvider.getUsernameFromToken(token);
+    public ResponseEntity<?> deleteReview(@PathVariable Long reviewId, 
+                                          @RequestParam String username, 
+                                          HttpServletRequest request) {
+        // 사용자 확인 및 리뷰 확인
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 정보가 유효하지 않습니다.");
         }
 
-        // 리뷰 조회 및 작성자 확인
         Review review = reviewRepository.findById(reviewId).orElse(null);
         if (review == null || !review.getUser().getUserId().equals(user.getUserId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("삭제 권한이 없습니다.");
@@ -164,7 +160,7 @@ public class ReviewController {
         // 리뷰 삭제
         reviewRepository.delete(review);
 
-        return ResponseEntity.ok("리뷰가 삭제되었습니다.");
+        return ResponseEntity.ok("리뷰가 성공적으로 삭제되었습니다.");
     }
     
     // 코드 중복 방지를 위해, 쿠키에서 JWT 토큰을 추출하는 로직을 별도 메서드로 분리
