@@ -42,12 +42,15 @@ public class SecurityConfig {
         JwtAuthenticationFilter jwtAuthenticationFilter = 
             new JwtAuthenticationFilter(jwtTokenProvider, authenticationManager(http), customUserDetailsService);
 
-        // HTTP 보안 설정
+     // HTTP 보안 설정
         http.csrf().disable()
+        	.cors()
+        	.and()
             .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/").permitAll() 
+                .requestMatchers("/**").permitAll() 
                 .requestMatchers("/login/**").permitAll()
+                .requestMatchers("/logout/**").permitAll()
                 .requestMatchers("/signup/**").permitAll()
                 .requestMatchers("/error/**").permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityEndpoints.PUBLIC_GET_ENDPOINTS).permitAll()
@@ -60,6 +63,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
             .and()
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
