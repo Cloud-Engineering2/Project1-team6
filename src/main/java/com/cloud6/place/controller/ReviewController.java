@@ -6,10 +6,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.cloud6.place.dto.ReviewDTO;
-import com.cloud6.place.dto.ReviewRequest;
 import com.cloud6.place.entity.Place;
 import com.cloud6.place.entity.Review;
 import com.cloud6.place.entity.User;
@@ -18,7 +24,6 @@ import com.cloud6.place.repository.UserRepository;
 import com.cloud6.place.security.JwtTokenProvider;
 import com.cloud6.place.service.PlaceService;
 import com.cloud6.place.service.ReviewService;
-import com.cloud6.place.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,27 +33,25 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
-    private final ReviewService reviewService;
-    private final UserService userService;
-    private final PlaceService placeService;
-    private final UserRepository userRepository;
-    private final ReviewRepository reviewRepository;
-
+	
+	private final ReviewService reviewService;
+	private final PlaceService placeService;
+	private final UserRepository userRepository;
+	private final ReviewRepository reviewRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-
-    @GetMapping("/{id}")
-    public ResponseEntity<List<Review>> getReviewsByPlaceId(@PathVariable Long id) {
-        try {
-            List<Review> reviews = reviewService.getReviewsByPlaceId(id); // id로 리뷰 조회
-            if (reviews.isEmpty()) {
-                return ResponseEntity.noContent().build(); // 리뷰가 없으면 204 No Content 응답
-            }
-            return ResponseEntity.ok(reviews); // 리뷰가 있으면 200 OK 응답과 함께 반환
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null); // 오류 발생 시 500 서버 에러 응답
-        }
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<List<Review>> getReviewsByPlaceId(@PathVariable Long id) {
+	    try {
+	        List<Review> reviews = reviewService.getReviewsByPlaceId(id); // id로 리뷰 조회
+	        if (reviews.isEmpty()) {
+	            return ResponseEntity.noContent().build(); // 리뷰가 없으면 204 No Content 응답
+	        }
+	        return ResponseEntity.ok(reviews); // 리뷰가 있으면 200 OK 응답과 함께 반환
+	    } catch (Exception e) {
+	        return ResponseEntity.status(500).body(null); // 오류 발생 시 500 서버 에러 응답
+	    }
+	}
 
     @PostMapping
     public ResponseEntity<?> addReview(@RequestBody ReviewDTO reviewDTO, HttpServletRequest request) {
