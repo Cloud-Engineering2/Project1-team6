@@ -1,11 +1,12 @@
 package com.cloud6.place.entity;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @Table(name = "place")
@@ -30,6 +31,7 @@ public class Place {
     private String category;
 
     // Review와의 관계 설정
+    @JsonManagedReference
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 }
